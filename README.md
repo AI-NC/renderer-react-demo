@@ -3,6 +3,17 @@
 This is a demo app demonstrating how to use the @ai-nc/renderer-react module. For more details see the
 **[web-renderer wiki](https://github.com/AI-NC/web-renderer/wiki)**
 
+## How to run
+
+Simply create a package access token [as per the web-renderer wiki](https://github.com/AI-NC/web-renderer/wiki/Installing-the-renderer#getting-an-authorisation-token) and add it to the .npmrc file in place of `YOUR_TOKEN_HERE`
+
+Then run the commands:
+
+```
+npm install
+npm run start
+```
+
 **COPYRIGHT NOTICE**
 
 *Copyright © 2023 Admix Pty. Ltd. (trading as AI-NC), all rights reserved.*
