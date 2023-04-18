@@ -1,43 +1,48 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const dotenv = require('dotenv').config({ path: __dirname + '/.env' })
+
 module.exports = {
-    entry: path.join(__dirname, "src", "index.tsx"),
+    entry: "./src/index.tsx",
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "bundle.js", // the name of the bundle
+        filename: "main.js", // the name of the bundle
     },
     devServer: {
         port: 3030, // you can change the port
     },
+    mode: process.env.NODE_ENV || "development",
+    resolve: {
+        extensions: [".tsx", ".ts", ".js"],
+    },
     module: {
         rules: [
             {
+                test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                test: /\.(js|jsx|tsx|ts)$/,
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: ['@babel/preset-env', '@babel/preset-react', "@babel/preset-typescript"]
-                    }
-                },
-                resolve: {
-                    extensions: ['.ts', '.tsx', '.js', '.json']
-                }
+                use: ["babel-loader"],
             },
             {
+                test: /\.(ts|tsx)$/,
                 exclude: /node_modules/,
-                test: /\.css$/,
+                use: ["ts-loader"],
+            },
+            {
+                test: /\.(css|scss)$/,
                 use: ["style-loader", "css-loader"],
             },
+            // {
+            //     test: /\.wasm$/,
+            //     exclude: /node_modules/,
+            //     use: ['wasm-loader'],
+            // }
         ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "src/index.html", // to import index.html file inside index.js
+            template: "public/index.html", // to import index.html file inside index.js
+            'process.env': JSON.stringify(process.env),
         }),
     ],
-    externals: {
-        'react': 'React'
-    },
 }

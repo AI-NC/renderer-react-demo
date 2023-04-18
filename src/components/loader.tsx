@@ -58,7 +58,7 @@ export default class Loader extends Component {
    */
   async process_file(buffer: ArrayBuffer) {
     this.setState({ buffer })
-    let response = await axios.post(process.env.REACT_APP_API_ADDRESS as string, buffer, { responseType: 'arraybuffer', headers: { "ainc-api-token": process.env.REACT_APP_API_KEY } });
+    let response = await axios.post("https://api.ai-nc.com/step", buffer, { responseType: 'arraybuffer', headers: { "ainc-api-token": "YOUR_API_TOKEN_HERE" } });
     this.setState({ golf: new Uint8Array(response.data) })
   }
 
