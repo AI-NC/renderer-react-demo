@@ -7,7 +7,7 @@ This is a demo app demonstrating how to use the @ai-nc/renderer-react module. Fo
 
 1. Create a package access token [as per the web-renderer wiki](https://github.com/AI-NC/web-renderer/wiki/Installing-the-renderer#getting-an-authorisation-token) and add it to the .npmrc file in place of `YOUR_TOKEN_HERE`.
 
-2. Add your API access key to `.env` in place of `YOUR_API_KEY_HERE`. If you need an API key contact us.
+2. Add your API access key to `loader.tsx` in place of `YOUR_API_KEY_HERE`. If you need an API key contact us.
 
 3. Run the commands:
 
