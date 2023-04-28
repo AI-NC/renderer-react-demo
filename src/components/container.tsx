@@ -1,5 +1,5 @@
 import { Component, ReactNode } from "react";
-import Loader from "./loader";
+import Renderer from "./renderer";
 
 export default class Container extends Component {
     state: {
@@ -12,7 +12,7 @@ export default class Container extends Component {
             <div style={{ height: "100%", width: "100%" }}>
                 <button type="button" onClick={onClick}>Open/Close</button>
                 <hr style={{width: "100%", marginTop: "3rem", marginBottom: "3rem"}}></hr>
-                {(this.state.open) ? <Loader></Loader> : <></> }
+                {(this.state.open) ? <Renderer></Renderer> : <></> }
             </div>
         )
     }
