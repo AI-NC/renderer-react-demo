@@ -10,7 +10,7 @@
 import React, { Component, ReactNode, RefObject } from "react";
 import axios from "axios"
 // @ts-ignore
-import "https://dtqafu4bm2a4z.cloudfront.net/client.js";
+import "https://cdn.ai-nc.com/renderer/client.js";
 import { IGolfRenderer } from "../renderer_types";
 
 export default class Renderer extends Component {
