@@ -10,20 +10,19 @@
 import React, { Component, ReactNode, RefObject } from "react";
 import axios from "axios"
 // @ts-ignore
-import { GolfRendererClient } from "http://localhost:8000/client.js";
+import "https://dtqafu4bm2a4z.cloudfront.net/client.js";
+import { IGolfRenderer } from "../renderer_types";
 
 export default class Renderer extends Component {
   /** The Iframe the renderer is contained in */
-  iframe: RefObject<HTMLIFrameElement> = React.createRef();
+  renderer: RefObject<IGolfRenderer> = React.createRef();
   state: {
     /** A buffer to hold a file read from the computer. */
     buffer?: ArrayBuffer,
-    /** The file after processing into a .golf file */
-    golf?: Uint8Array
+    /** A helper to clean up all the listeners when unmounting the renderer */
+    unsubscriber?: AbortController,
     /** Is the renderer loaded and ready to receive commands */
     ready: boolean
-    /** The renderer client */
-    client?: any
   } = {
       ready: false,
     };
@@ -54,23 +53,6 @@ export default class Renderer extends Component {
     });
   }
 
-  async componentDidMount() {
-    console.log(this.iframe)
-    let iframe = this.iframe.current;
-    let eventHandler = this;
-    let debug = true;
-    if (iframe) {
-      /*
-      Here we create a new client, giving them the iframe, the event handler (in this case that is 'this' the Renderer
-      component), and a boolean to indicate if we want to log debug messages
-      */
-      let client = new GolfRendererClient(iframe, eventHandler, debug);
-      await client.connect();
-      this.setState({ client })
-    }
-
-  }
-
   /**
    * An function that gets a .golf file from the AI-NC API
    * 
@@ -78,26 +60,24 @@ export default class Renderer extends Component {
    */
   async process_file(buffer: ArrayBuffer) {
     this.setState({ buffer })
-    let response = await axios.post(process.env.REACT_APP_API_ADDRESS as string, buffer, { responseType: 'arraybuffer', headers: { "ainc-api-token": process.env.REACT_APP_API_KEY } });
+    let response = await axios.post(process.env.REACT_APP_API_ADDRESS as string, buffer, { responseType: 'arraybuffer', headers: { "Authorization": process.env.REACT_APP_API_KEY } });
     console.log(response);
-    this.state.client.loadGolf(response.data, true)
+    this.renderer.current?.commands.loadGolf(response.data, true)
   }
 
   render(): ReactNode {
     return (
       <div>
         <input type="file" onChange={(e) => this.readFile(e)} accept=".stp, .step, .tg" />
-        <div style={{ width: "100vw", height: "100vh" }}>
-          <iframe style={{ width: "100%", height: "100%" }} frameBorder="0" ref={this.iframe} src="http://localhost:8000/"></iframe>
-        </div>
+        <golf-renderer style={{ width: "100vw", height: "100vh" }} ref={this.renderer}></golf-renderer>
       </div>
     );
   }
 
-  ///////////////////////////////////////// Making Renderer an EventHandler ////////////////////////////////////////////
+  ///////////////////////////////////////////// Handling Renderer Events ///////////////////////////////////////////////
   /**
-   * Because we want the to be able to change the state according to events from the renderer. We want to make this
-   * react component into the event handler passed into the renderer.
+   * Because we want the to be able to change the state according to events from the renderer an easy way of making sure
+   * this works is to create methods on the component that we will then attach as event listeners.
    * (see https://github.com/AI-NC/renderer-react-demo/wiki/Renderer-Events for details on event handlers)
    */
 
@@ -140,5 +120,42 @@ export default class Renderer extends Component {
    */
   log(level: "info" | "warn" | "error", message: String) {
     console[level](message)
+  }
+
+  /**
+   * We then want to attach all of these event listeners to the iframe, and get the controller so we can send commands
+   * to the renderer
+   */
+  componentDidMount() {
+    console.log(this.renderer)
+    let renderer = this.renderer.current;
+
+    if (renderer) {
+      // First we want to create an Unsubscriber that will remove all our listners when we pack up out component
+      this.setState({ unsubscriber: new AbortController() });
+      let signal = { signal: this.state.unsubscriber?.signal };
+
+
+      /*
+      Here hook up the listener events, you could just create the closures here, although given we want to be changing
+      the renderers state it is easier to move the logic into function calls.
+      
+      We can also avoid any confusion with the context of `this` by explicitly calling methods on `Renderer`.
+      */
+      renderer.addEventListener("connected", (event: any ) => { this.onConnect() }, signal)
+      renderer.addEventListener("disconnected", (event: any) => { this.onDisconnect() }, signal)
+      renderer.addEventListener("modelLoaded", (event: any) => { this.onModelLoaded() }, signal)
+      renderer.addEventListener("selectionChanged", (event: any) => { this.onSelectionChanged(event.detail) }, signal)
+      renderer.addEventListener("log", (event: any) => { this.log(event.detail.level, event.detail.message) }, signal)
+    } else {
+      console.error("Unable to find renderer when mounting component")
+    }
+  }
+
+  /**
+   * We want to remove all the listners when we unmount the component
+   */
+  componentWillUnmount(): void {
+    this.state.unsubscriber?.abort();
   }
 }
