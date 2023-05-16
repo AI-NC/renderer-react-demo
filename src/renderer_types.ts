@@ -43,4 +43,8 @@ export interface IGolfRendererCommands {
      * @param ids The ID of faces and edges are emitted by 'on_select' events when a user interacts with the model.
      */
     identify(ids: string[]): void;
+    /**
+     * TODO
+     */
+    setConfig(config: any): void;
 }
