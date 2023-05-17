@@ -202,9 +202,22 @@ export default class Renderer extends Component {
 }
 
 function randomConfig(): any {
-  return {
-    base_color: [Math.random() * 255, Math.random() * 255, Math.random() * 255],
-    gradient_color: [Math.random() * 255, Math.random() * 255, Math.random() * 255],
-    model_color: [Math.random() * 255, Math.random() * 255, Math.random() * 255],
-  };
+  const base_color = random_bool() ? random_color() : undefined;
+  const gradient_color = random_bool() ? random_color() : undefined;
+  const model_color = random_bool() ? random_color() : undefined;
+  const hover_color = random_bool() ? random_color() : undefined;
+  const cam_sens = random_bool() ? Math.random() * 2 : undefined;
+  const zoom_sens = random_bool() ? Math.random() * 2 : undefined;
+  const inspection_on = random_bool() ? random_bool() : undefined;
+  const watermark = random_bool() ? random_bool() : undefined;
+
+  return { base_color, gradient_color, model_color, hover_color, cam_sens, zoom_sens, inspection_on, watermark };
+}
+
+function random_bool(): boolean {
+  return Math.random() > 0.5;
+}
+
+function random_color(): [number, number, number] {
+  return [Math.random() * 255, Math.random() * 255, Math.random() * 255];
 }
