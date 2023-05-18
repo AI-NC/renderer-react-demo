@@ -81,7 +81,7 @@ export default class Renderer extends Component {
         >
           Random Config!
         </button>
-        <golf-renderer style={{ width: "100vw", height: "100vh" }} ref={this.renderer}></golf-renderer>
+        <golf-renderer style={{ width: "100vw", height: "100vh" }} ref={this.renderer} renderer-config={JSON.stringify(randomConfig())}></golf-renderer>
       </div>
     );
   }
