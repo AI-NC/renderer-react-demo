@@ -19,7 +19,7 @@ export default class Renderer extends Component {
   renderer: RefObject<IGolfRenderer> = React.createRef();
   state: {
     /** A buffer to hold a file read from the computer. */
-    buffer?: ArrayBuffer;
+    file?: File;
     /** A helper to clean up all the listeners when unmounting the renderer */
     unsubscriber?: AbortController;
     /** Is the renderer loaded and ready to receive commands */
@@ -39,29 +39,20 @@ export default class Renderer extends Component {
 
     const file = e.target.files[0];
 
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        if (event.target?.result instanceof ArrayBuffer) this.process_file(event.target.result);
-      };
-
-      reader.onerror = (err) => {
-        reject(err);
-      };
-
-      reader.readAsArrayBuffer(file);
-    });
+    this.process_file(file)
   }
 
   /**
    * An function that gets a .golf file from the AI-NC API
    *
-   * @param buffer A buffer containing the bytes of the .step file to load
+   * @param file A buffer containing the bytes of the .step file to load
    */
-  async process_file(buffer: ArrayBuffer) {
-    this.setState({ buffer });
-    let response = await axios.post(process.env.REACT_APP_API_ADDRESS as string, buffer, {
+  async process_file(file: File) {
+    this.setState({ file: file });
+    // The AI-NC API expects a form with the type of file, and the file bytes.
+    let formData = new FormData();
+    formData.append("file", file)
+    let response = await axios.post(process.env.REACT_APP_API_ADDRESS as string, formData, {
       responseType: "arraybuffer",
       headers: { Authorization: process.env.REACT_APP_API_KEY },
     });
