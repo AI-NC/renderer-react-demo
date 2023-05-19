@@ -10,8 +10,8 @@
 import React, { Component, ReactNode, RefObject } from "react";
 import axios from "axios";
 // @ts-ignore
-// import "https://cdn.ai-nc.com/renderer/client.js";
-import "http://localhost:8000/client.js";
+import "https://cdn.ai-nc.com/renderer/client.js";
+// import "http://localhost:8000/client.js";
 import { IGolfRenderer } from "../renderer_types";
 
 export default class Renderer extends Component {
@@ -81,7 +81,11 @@ export default class Renderer extends Component {
         >
           Random Config!
         </button>
-        <golf-renderer style={{ width: "100vw", height: "100vh" }} ref={this.renderer} renderer-config={JSON.stringify(randomConfig())}></golf-renderer>
+        <golf-renderer
+          style={{ width: "100vw", height: "100vh" }}
+          ref={this.renderer}
+          renderer-config={JSON.stringify(randomConfig())}
+        ></golf-renderer>
       </div>
     );
   }
@@ -210,8 +214,19 @@ function randomConfig(): any {
   const zoom_sens = random_bool() ? Math.random() * 2 : undefined;
   const inspection_on = random_bool() ? random_bool() : undefined;
   const watermark = random_bool() ? random_bool() : undefined;
+  // const enable_variable_resolution = random_bool() ? random_bool() : undefined;
 
-  return { base_color, gradient_color, model_color, hover_color, cam_sens, zoom_sens, inspection_on, watermark };
+  return {
+    base_color,
+    gradient_color,
+    model_color,
+    hover_color,
+    cam_sens,
+    zoom_sens,
+    inspection_on,
+    watermark,
+    // enable_variable_resolution,
+  };
 }
 
 function random_bool(): boolean {
