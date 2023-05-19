@@ -52,6 +52,7 @@ export default class Renderer extends Component {
     // The AI-NC API expects a form with the type of file, and the file bytes.
     let formData = new FormData();
     formData.append("file", file)
+
     let response = await axios.post(process.env.REACT_APP_API_ADDRESS as string, formData, {
       responseType: "arraybuffer",
       headers: { Authorization: process.env.REACT_APP_API_KEY },
@@ -63,7 +64,7 @@ export default class Renderer extends Component {
   render(): ReactNode {
     return (
       <div>
-        <input type="file" onChange={(e) => this.readFile(e)} accept=".stp, .step, .tg" />
+        <input type="file" onChange={(e) => this.readFile(e)} accept=".stp, .step, .stl" />
         <button
           onClick={(e) => {
             console.log("onclick");
